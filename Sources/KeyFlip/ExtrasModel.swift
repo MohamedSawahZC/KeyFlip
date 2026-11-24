@@ -2,35 +2,50 @@ import KeyFlipCore
 import ServiceManagement
 import SwiftUI
 
+/// Features that run in the background while KeyFlip is open: scroll reversing and Alt+Shift.
 @MainActor
-final class MouseModel: ObservableObject {
+final class ExtrasModel: ObservableObject {
     private static let reverseKey = "reverseMouseWheel"
+    private static let altShiftKey = "altShiftSwitchesLanguage"
+    nonisolated private static let backgroundKey = "runInBackground"
+
+    nonisolated static var runsInBackground: Bool { UserDefaults.standard.bool(forKey: backgroundKey) }
 
     @Published private(set) var reverseWheel = UserDefaults.standard.bool(forKey: reverseKey)
-    @Published private(set) var hasPermission = ScrollReverser.hasPermission
+    @Published private(set) var altShiftSwitchesLanguage = UserDefaults.standard.bool(forKey: altShiftKey)
+    @Published private(set) var hasPermission = EventTap.hasPermission
+    @Published private(set) var runInBackground = runsInBackground
     @Published private(set) var startsAtLogin = SMAppService.mainApp.status == .enabled
     @Published private(set) var errorMessage: String?
 
-    private let reverser = ScrollReverser()
+    private let scrollTap = ScrollReverser.makeTap()
+    private let languageTap = LanguageSwitcher.makeTap()
+
+    var needsPermission: Bool { (reverseWheel || altShiftSwitchesLanguage) && !hasPermission }
 
     init() {
         sync()
     }
 
     func refresh() {
-        hasPermission = ScrollReverser.hasPermission
+        hasPermission = EventTap.hasPermission
         startsAtLogin = SMAppService.mainApp.status == .enabled
         sync()
     }
 
     func setReverseWheel(_ on: Bool) {
-        // 1) Ask macOS for Accessibility the first time it is needed
-        if on && !hasPermission { ScrollReverser.requestPermission() }
-
-        // 2) Remember the choice and start or stop reversing
         reverseWheel = on
-        UserDefaults.standard.set(on, forKey: Self.reverseKey)
-        refresh()
+        save(on, forKey: Self.reverseKey)
+    }
+
+    func setAltShiftSwitchesLanguage(_ on: Bool) {
+        altShiftSwitchesLanguage = on
+        save(on, forKey: Self.altShiftKey)
+    }
+
+    func setRunInBackground(_ on: Bool) {
+        runInBackground = on
+        UserDefaults.standard.set(on, forKey: Self.backgroundKey)
     }
 
     func setStartsAtLogin(_ on: Bool) {
@@ -43,7 +58,21 @@ final class MouseModel: ObservableObject {
         refresh()
     }
 
+    private func save(_ on: Bool, forKey key: String) {
+        // 1) Ask macOS for Accessibility the first time a feature needs it
+        if on && !hasPermission { EventTap.requestPermission() }
+
+        // 2) Remember the choice and start or stop the listeners
+        UserDefaults.standard.set(on, forKey: key)
+        refresh()
+    }
+
     private func sync() {
-        if reverseWheel && hasPermission { reverser.start() } else { reverser.stop() }
+        toggle(scrollTap, on: reverseWheel && hasPermission)
+        toggle(languageTap, on: altShiftSwitchesLanguage && hasPermission)
+    }
+
+    private func toggle(_ tap: EventTap, on: Bool) {
+        if on { tap.start() } else { tap.stop() }
     }
 }

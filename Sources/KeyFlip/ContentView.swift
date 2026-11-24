@@ -7,7 +7,7 @@ private let appVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionStrin
 
 struct ContentView: View {
     @EnvironmentObject private var model: KeyboardsModel
-    @EnvironmentObject private var mouse: MouseModel
+    @EnvironmentObject private var extras: ExtrasModel
 
     var body: some View {
         NavigationSplitView {
@@ -20,8 +20,9 @@ struct ContentView: View {
                         Text("None connected").foregroundStyle(.secondary)
                     }
                 }
-                Section("Mouse") {
+                Section("More") {
                     Label("Scroll wheel", systemImage: "computermouse").tag(KeyboardsModel.mouseID)
+                    Label("Language switch", systemImage: "globe").tag(KeyboardsModel.languageID)
                 }
             }
             .navigationSplitViewColumnWidth(min: 190, ideal: 210)
@@ -39,6 +40,8 @@ struct ContentView: View {
         } detail: {
             if model.selection == KeyboardsModel.mouseID {
                 MouseView()
+            } else if model.selection == KeyboardsModel.languageID {
+                LanguageView()
             } else if let keyboard = model.selected {
                 detail(for: keyboard)
             } else {
@@ -53,7 +56,7 @@ struct ContentView: View {
         .onAppear(perform: model.refresh)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             model.refresh()
-            mouse.refresh()
+            extras.refresh()
         }
     }
 
@@ -66,16 +69,20 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Toggle(isOn: Binding(
-                get: { model.remap == .windows },
-                set: { model.commit($0 ? .windows : .identity) }
-            )) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Windows layout").font(.headline)
-                    Text("Alt works as ⌘ Command and Win as ⌥ Option, like a Mac keyboard.")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 12) {
+                Picker("Layout", selection: Binding(
+                    get: { LayoutPreset.matching(model.remap) },
+                    set: { if let preset = $0 { model.commit(preset.remap) } }
+                )) {
+                    ForEach(LayoutPreset.allCases) { preset in
+                        Text(preset.title).tag(Optional(preset))
+                    }
                 }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+                Text(LayoutPreset.matching(model.remap)?.detail ?? "Custom: set each key below.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
             }
             .card()
 
@@ -115,5 +122,39 @@ extension View {
         toggleStyle(.switch)
             .padding(16)
             .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}
+
+enum LayoutPreset: String, CaseIterable, Identifiable {
+    case standard, ctrlAsCommand, altAsCommand
+
+    var id: String { rawValue }
+
+    static func matching(_ remap: Remap) -> LayoutPreset? {
+        allCases.first { $0.remap == remap }
+    }
+
+    var remap: Remap {
+        switch self {
+        case .standard: .identity
+        case .ctrlAsCommand: .ctrlAsCommand
+        case .altAsCommand: .altAsCommand
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .standard: "No change"
+        case .ctrlAsCommand: "Ctrl is ⌘"
+        case .altAsCommand: "Alt is ⌘"
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .standard: "Keys act as macOS reads them: Win is ⌘ Command, Alt is ⌥ Option."
+        case .ctrlAsCommand: "Windows habits: Ctrl+C, Ctrl+V and Ctrl+A copy, paste and select all."
+        case .altAsCommand: "Mac habits: the key next to the space bar is ⌘, like on a Mac keyboard."
+        }
     }
 }

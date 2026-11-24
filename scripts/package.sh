@@ -4,6 +4,7 @@ set -euo pipefail
 
 VERSION="${1:-$(cat "$(dirname "$0")/../VERSION")}"
 IDENTIFIER="io.github.mohamedsawahzc.keyflip"
+SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/build/root/KeyFlip.app"
 
@@ -28,9 +29,9 @@ for SIZE in 16 32 128 256 512; do
 done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
-# 4) Strip Finder metadata, then ad-hoc sign so Apple Silicon will run it
+# 4) Strip Finder metadata, then sign; a named identity keeps Accessibility access across builds
 xattr -cr "$APP"
-codesign --force --sign - "$APP"
+codesign --force --sign "$SIGN_IDENTITY" "$APP"
 
 # 5) Build the installer, always into /Applications
 pkgbuild --analyze --root build/root build/components.plist

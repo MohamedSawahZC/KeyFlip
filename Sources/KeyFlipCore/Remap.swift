@@ -35,12 +35,18 @@ public struct Remap: Equatable, Sendable {
 
     public static let identity = Remap()
 
-    public static let windows: Remap = {
+    /// Alt and Win trade places, so the keys sit where a Mac keyboard has them.
+    public static let altAsCommand = swapping(.option, .command)
+
+    /// Ctrl and Win trade places, so Ctrl+C, Ctrl+V and Ctrl+A work like on Windows.
+    public static let ctrlAsCommand = swapping(.control, .command)
+
+    private static func swapping(_ first: ModKey, _ second: ModKey) -> Remap {
         var remap = Remap()
-        remap[.option] = .command
-        remap[.command] = .option
+        remap[first] = second
+        remap[second] = first
         return remap
-    }()
+    }
 
     public subscript(source: ModKey) -> ModKey {
         get { targets[source] ?? source }

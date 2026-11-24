@@ -10,10 +10,17 @@ final class RemapTests: XCTestCase {
         XCTAssertEqual(Remap.identity.entries(), [])
     }
 
-    func testWindowsPresetSwapsAltAndWinOnBothSides() {
-        XCTAssertEqual(pairs(.windows), [
+    func testAltAsCommandSwapsAltAndWinOnBothSides() {
+        XCTAssertEqual(pairs(.altAsCommand), [
             [0x7000000E2, 0x7000000E3], [0x7000000E3, 0x7000000E2],
             [0x7000000E6, 0x7000000E7], [0x7000000E7, 0x7000000E6],
+        ])
+    }
+
+    func testCtrlAsCommandSwapsCtrlAndWinOnBothSides() {
+        XCTAssertEqual(pairs(.ctrlAsCommand), [
+            [0x7000000E0, 0x7000000E3], [0x7000000E3, 0x7000000E0],
+            [0x7000000E4, 0x7000000E7], [0x7000000E7, 0x7000000E4],
         ])
     }
 
@@ -37,7 +44,7 @@ final class RemapTests: XCTestCase {
 
     func testEntriesRoundTrip() {
         // 1) Build a mixed remap
-        var remap = Remap.windows
+        var remap = Remap.altAsCommand
         remap[.capsLock] = .control
         remap[.control] = .noAction
 

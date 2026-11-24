@@ -1,6 +1,6 @@
 # KeyFlip
 
-Use a Windows keyboard on your Mac with one switch. KeyFlip swaps Alt and Win so they sit where ⌘ and ⌥ sit on a Mac keyboard, and lets you remap Caps Lock, Ctrl, Alt and Win per keyboard.
+Use a Windows keyboard on your Mac with one click. Pick **Ctrl is ⌘** to keep your Windows habits (Ctrl+C, Ctrl+V, Ctrl+A), or **Alt is ⌘** to match a Mac keyboard. You can also remap Caps Lock, Ctrl, Alt and Win per keyboard.
 
 It also fixes the reversed mouse wheel without touching your trackpad. Free and native SwiftUI.
 
@@ -14,7 +14,10 @@ It also fixes the reversed mouse wheel without touching your trackpad. Free and 
 ## Use
 
 1. Pick your keyboard in the sidebar.
-2. Turn on **Windows layout** to swap Alt and Win.
+2. Pick a layout:
+   - **Ctrl is ⌘**: Ctrl+C, Ctrl+V, Ctrl+A and Ctrl+Z work like on Windows. Win becomes Control.
+   - **Alt is ⌘**: the key next to the space bar acts as ⌘, like on a Mac keyboard.
+   - **No change**: macOS defaults.
 3. Or click the menu under any key and pick what it should do: Caps Lock, Control, Option, Command, Escape, or No action.
 
 Changes apply the moment you pick them. KeyFlip saves them in the same place as **System Settings → Keyboard → Keyboard Shortcuts → Modifier Keys**, so they survive restarts and replugging, and you can quit the app. **Reset to default** clears them.
@@ -23,15 +26,19 @@ KeyFlip lists external keyboards only. It hides gaming mice that pretend to be k
 
 ## Mouse scroll wheel
 
-macOS uses one natural-scrolling setting for both trackpad and mouse, so a mouse wheel feels upside down. Open **Mouse → Scroll wheel** in KeyFlip and turn on **Reverse scroll wheel**. KeyFlip flips notched mouse wheels only, and your trackpad and Magic Mouse keep natural scrolling.
+macOS uses one natural-scrolling setting for both trackpad and mouse, so a mouse wheel feels upside down. Open **Scroll wheel** in the KeyFlip sidebar and turn on **Reverse scroll wheel**. KeyFlip flips notched mouse wheels only, and your trackpad and Magic Mouse keep natural scrolling.
 
-macOS asks for **Accessibility** access the first time. Allow it in **System Settings → Privacy & Security → Accessibility**. KeyFlip has to stay running for this one, so turn on **Start at login**. Closing the window keeps it running.
+macOS asks for **Accessibility** access the first time. Allow it in **System Settings → Privacy & Security → Accessibility**. KeyFlip has to stay running for this and for the Alt+Shift switch. Turn on **Start at login** and **Run in background**: KeyFlip then lives in the menu bar (⌨ icon) with no Dock icon and no window at login. Use the menu bar icon to open it, flip the toggles, or quit.
 
-After you install a new version, remove KeyFlip from the Accessibility list and allow it again. Builds without an Apple Developer signature get a new identity each time.
+Release builds have no Apple Developer signature, so macOS sees each new version as a different app. After an update, remove KeyFlip from the Accessibility list and allow it again. Builds you sign yourself (below) keep the permission.
 
 ## Switching input language
 
-A Windows keyboard has no 🌐 key. Press **Ctrl + Space** to switch input language, or change the shortcut in **System Settings → Keyboard → Keyboard Shortcuts → Input Sources**.
+macOS does not let a shortcut use modifier keys alone, so Alt+Shift cannot switch language out of the box. Open **Language switch** in KeyFlip and turn on **Alt + Shift switches language**. Press and release ⌥ Option and ⇧ Shift together to move to the next language. Alt+Shift with another key still works as a normal shortcut.
+
+This uses the same Accessibility access as the scroll wheel fix.
+
+The macOS shortcut is ⌃ Control + Space. With **Ctrl is ⌘**, that means pressing Win + Space on a Windows keyboard.
 
 ## How it works
 
@@ -49,6 +56,12 @@ Needs macOS 14+ and Xcode 16.
 swift test                  # run the tests
 swift run KeyFlip           # run the app
 scripts/package.sh 1.0.0    # build dist/KeyFlip-1.0.0.pkg
+```
+
+To keep Accessibility access across your own rebuilds, sign with a fixed certificate. Create a self-signed **Code Signing** certificate in Keychain Access (Certificate Assistant → Create a Certificate), then:
+
+```sh
+SIGN_IDENTITY="Your Certificate Name" scripts/package.sh
 ```
 
 ## Releasing
