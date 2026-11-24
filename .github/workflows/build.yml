@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test
+        run: swift test
+
+      - name: Package
+        run: |
+          VERSION="$(cat VERSION)"
+          if [[ "$GITHUB_REF_TYPE" == "tag" && "$GITHUB_REF_NAME" != "v$VERSION" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION file ($VERSION)"
+            exit 1
+          fi
+          [[ "$GITHUB_REF_TYPE" == "tag" ]] || VERSION="$VERSION-dev.${GITHUB_SHA::7}"
+          scripts/package.sh "$VERSION"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KeyFlip-pkg
+          path: dist/*.pkg
+
+      - name: Release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.pkg --generate-notes
