@@ -43,8 +43,13 @@ public func apply(_ remap: Remap, to keyboard: Keyboard) throws {
     CFPreferencesSynchronize(kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesCurrentHost)
 
     // 2) Apply it to the connected keyboard right away
+    try applyLive(remap, to: keyboard)
+}
+
+/// Changes the connected keyboard for this session only, leaving the saved mapping alone.
+public func applyLive(_ remap: Remap, to keyboard: Keyboard) throws {
     let matching = #"{"VendorID":\#(keyboard.vendorID),"ProductID":\#(keyboard.productID)}"#
-    let mapping = entries
+    let mapping = remap.entries()
         .map { #"{"\#(srcKey)":\#($0.src),"\#(dstKey)":\#($0.dst)}"# }
         .joined(separator: ",")
     try runHidutil(["property", "--matching", matching, "--set", #"{"UserKeyMapping":[\#(mapping)]}"#])

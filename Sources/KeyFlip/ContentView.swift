@@ -21,7 +21,7 @@ struct ContentView: View {
                     }
                 }
                 Section("More") {
-                    Label("Scroll wheel", systemImage: "computermouse").tag(KeyboardsModel.mouseID)
+                    Label("Mouse", systemImage: "computermouse").tag(KeyboardsModel.mouseID)
                     Label("Windows shortcuts", systemImage: "command").tag(KeyboardsModel.shortcutsID)
                 }
             }

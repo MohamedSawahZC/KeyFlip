@@ -24,22 +24,32 @@ Changes apply the moment you pick them. KeyFlip saves them in the same place as 
 
 KeyFlip lists external keyboards only. It hides gaming mice that pretend to be keyboards, and leaves your Mac's built-in keyboard to System Settings.
 
-## Mouse scroll wheel
+## Mouse
 
-macOS uses one natural-scrolling setting for both trackpad and mouse, so a mouse wheel feels upside down. Open **Scroll wheel** in the KeyFlip sidebar and turn on **Reverse scroll wheel**. KeyFlip flips notched mouse wheels only, and your trackpad and Magic Mouse keep natural scrolling.
+Open **Mouse** in the KeyFlip sidebar. Every option leaves your trackpad and Magic Mouse alone.
 
-macOS asks for **Accessibility** access the first time. Allow it in **System Settings → Privacy & Security → Accessibility**. KeyFlip has to stay running for this and for the Windows shortcuts. Turn on **Start at login** and **Run in background**: KeyFlip then lives in the menu bar (⌨ icon) with no Dock icon and no window at login. Use the menu bar icon to open it, flip the toggles, or quit.
+- **Reverse scroll wheel**: macOS uses one natural-scrolling setting for trackpad and mouse, so a mouse wheel feels upside down. This flips clicking mouse wheels only.
+- **Wheel speed**: 1× to 4× per wheel click.
+- **Side buttons go back and forward**: the thumb buttons send ⌘[ and ⌘], which Chrome, Safari, Finder and most apps understand.
+
+macOS asks for **Accessibility** access the first time. Allow it in **System Settings → Privacy & Security → Accessibility**. KeyFlip has to stay running for the mouse options and the Windows shortcuts. Turn on **Start at login** and **Run in background**: KeyFlip then lives in the menu bar (⌨ icon) with no Dock icon and no window at login.
 
 Release builds have no Apple Developer signature, so macOS sees each new version as a different app. After an update, remove KeyFlip from the Accessibility list and allow it again. Builds you sign yourself (below) keep the permission.
 
 ## Windows shortcuts
 
-With **Ctrl is ⌘**, your Ctrl key runs Mac shortcuts, so the Mac app switcher moves to Ctrl+Tab. Open **Windows shortcuts** in the KeyFlip sidebar to get the Windows keys back:
+With **Ctrl is ⌘**, your Ctrl key runs Mac shortcuts. Open **Windows shortcuts** in the KeyFlip sidebar for the rest of your Windows habits:
 
-- **Alt + Tab switches apps**: hold Alt, tap Tab to move through apps, release Alt to switch. Alt+Shift+Tab goes back.
-- **Alt + Shift switches language**: press and release Alt and Shift together to move to the next input language. Alt+Shift with another key still works as a normal shortcut.
+| Switch | Keys |
+|---|---|
+| Alt + Tab switches apps | Hold Alt, tap Tab, release to switch. Alt+Shift+Tab goes back. |
+| Alt + Shift switches language | Press and release Alt and Shift together. |
+| Windows text keys | Home / End: start or end of line. Ctrl+Home / End: top or bottom. Ctrl+← / →: word. Ctrl+↑ / ↓: paragraph. Ctrl+Backspace / Delete: whole word. Shift selects as usual. |
+| Print Screen takes a screenshot | Opens the macOS Screenshot toolbar. |
 
-macOS does not offer either one natively: ⌘ can live on one key only, and macOS shortcuts cannot use modifier keys alone. Both use the same Accessibility access as the scroll wheel fix.
+Text keys expect the **Ctrl is ⌘** layout and apply to every keyboard, your Mac's built-in one included.
+
+**Keep Ctrl as Ctrl in these apps**: add Terminal, a code editor or a game, and while that app is in front, your external keyboards go back to Mac defaults and the text keys pause. KeyFlip never touches your saved mapping for this, and it restores your keys when you switch away or quit.
 
 The macOS language shortcut ⌃ Control + Space still works. With **Ctrl is ⌘**, you press it as Win + Space.
 

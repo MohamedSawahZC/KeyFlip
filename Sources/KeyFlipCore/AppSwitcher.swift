@@ -52,30 +52,14 @@ public struct AppSwitchTranslator {
 }
 
 public enum AppSwitcher {
-    /// Tags events KeyFlip posts so its own tap lets them through untouched.
-    private static let marker: Int64 = 0x4B46_4C50
-
     public static func makeTap() -> EventTap {
         var translator = AppSwitchTranslator()
         return EventTap(events: [.keyDown, .keyUp, .flagsChanged]) { type, event in
-            guard event.getIntegerValueField(.eventSourceUserData) != marker else { return event }
+            guard !EventTap.isOwnEvent(event) else { return event }
             let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
             let output = translator.handle(type: type, keyCode: keyCode, flags: event.flags)
-            output.post.forEach(post)
+            output.post.forEach(EventTap.post)
             return output.passOriginal ? event : nil
         }
-    }
-
-    private static func post(_ spec: KeySpec) {
-        // 1) Build a keyboard event that carries only the flags we chose
-        let source = CGEventSource(stateID: .privateState)
-        guard let event = CGEvent(keyboardEventSource: source, virtualKey: spec.keyCode, keyDown: spec.type == .keyDown)
-        else { return }
-        event.type = spec.type
-        event.flags = spec.flags
-        event.setIntegerValueField(.eventSourceUserData, value: marker)
-
-        // 2) Inject it where the system app switcher listens
-        event.post(tap: .cghidEventTap)
     }
 }

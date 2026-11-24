@@ -16,7 +16,27 @@ public final class EventTap {
         self.handler = handler
     }
 
+    /// Tags events KeyFlip posts so its own taps let them through untouched.
+    private static let ownEventMarker: Int64 = 0x4B46_4C50
+
     public static var hasPermission: Bool { AXIsProcessTrusted() }
+
+    public static func isOwnEvent(_ event: CGEvent) -> Bool {
+        event.getIntegerValueField(.eventSourceUserData) == ownEventMarker
+    }
+
+    public static func post(_ spec: KeySpec) {
+        // 1) Build a keyboard event that carries only the flags we chose
+        let source = CGEventSource(stateID: .privateState)
+        guard let event = CGEvent(keyboardEventSource: source, virtualKey: spec.keyCode, keyDown: spec.type == .keyDown)
+        else { return }
+        event.type = spec.type
+        event.flags = spec.flags
+        event.setIntegerValueField(.eventSourceUserData, value: ownEventMarker)
+
+        // 2) Inject it where system shortcuts like the app switcher listen
+        event.post(tap: .cghidEventTap)
+    }
 
     public static func requestPermission() {
         let prompt = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
