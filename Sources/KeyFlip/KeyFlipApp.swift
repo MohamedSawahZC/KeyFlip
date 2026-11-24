@@ -65,6 +65,7 @@ private struct MenuBarMenu: View {
             "Alt + Shift switches language",
             isOn: Binding(get: { extras.altShiftSwitchesLanguage }, set: extras.setAltShiftSwitchesLanguage)
         )
+        Toggle("Alt + Tab switches apps", isOn: Binding(get: { extras.altTabSwitchesApps }, set: extras.setAltTabSwitchesApps))
         Divider()
         Button("Quit KeyFlip") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
@@ -74,7 +75,7 @@ private struct MenuBarMenu: View {
 @MainActor
 final class KeyboardsModel: ObservableObject {
     static let mouseID = "mouse"
-    static let languageID = "language"
+    static let shortcutsID = "shortcuts"
 
     @Published private(set) var keyboards: [Keyboard] = []
     @Published var selection: Keyboard.ID? {
@@ -90,7 +91,7 @@ final class KeyboardsModel: ObservableObject {
         keyboards = connectedKeyboards()
 
         // 2) Drop a selection that was unplugged, pick the first one instead
-        if selection == Self.mouseID || selection == Self.languageID { return }
+        if selection == Self.mouseID || selection == Self.shortcutsID { return }
         if selected == nil { selection = keyboards.first?.id ?? Self.mouseID } else { load() }
     }
 

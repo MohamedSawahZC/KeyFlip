@@ -22,7 +22,7 @@ struct ContentView: View {
                 }
                 Section("More") {
                     Label("Scroll wheel", systemImage: "computermouse").tag(KeyboardsModel.mouseID)
-                    Label("Language switch", systemImage: "globe").tag(KeyboardsModel.languageID)
+                    Label("Windows shortcuts", systemImage: "command").tag(KeyboardsModel.shortcutsID)
                 }
             }
             .navigationSplitViewColumnWidth(min: 190, ideal: 210)
@@ -40,8 +40,8 @@ struct ContentView: View {
         } detail: {
             if model.selection == KeyboardsModel.mouseID {
                 MouseView()
-            } else if model.selection == KeyboardsModel.languageID {
-                LanguageView()
+            } else if model.selection == KeyboardsModel.shortcutsID {
+                ShortcutsView()
             } else if let keyboard = model.selected {
                 detail(for: keyboard)
             } else {

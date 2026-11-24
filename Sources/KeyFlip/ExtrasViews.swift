@@ -21,13 +21,13 @@ struct MouseView: View {
     }
 }
 
-struct LanguageView: View {
+struct ShortcutsView: View {
     @EnvironmentObject private var extras: ExtrasModel
 
     var body: some View {
         ExtrasPage(
-            title: "Language",
-            subtitle: "Switch input language the Windows way. Ctrl+Space keeps working too."
+            title: "Windows shortcuts",
+            subtitle: "Keep your Windows muscle memory for switching apps and languages."
         ) {
             Toggle(
                 isOn: Binding(get: { extras.altShiftSwitchesLanguage }, set: extras.setAltShiftSwitchesLanguage)
@@ -35,6 +35,14 @@ struct LanguageView: View {
                 ToggleLabel(
                     title: "Alt + Shift switches language",
                     detail: "Press and release ⌥ Option and ⇧ Shift together to jump to the next language."
+                )
+            }
+            .card()
+
+            Toggle(isOn: Binding(get: { extras.altTabSwitchesApps }, set: extras.setAltTabSwitchesApps)) {
+                ToggleLabel(
+                    title: "Alt + Tab switches apps",
+                    detail: "Hold ⌥ Option, tap Tab to move through apps, release to switch. Shift goes back."
                 )
             }
             .card()

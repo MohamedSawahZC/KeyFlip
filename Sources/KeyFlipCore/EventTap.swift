@@ -3,7 +3,8 @@ import CoreGraphics
 
 /// Watches system-wide input events on the main run loop. Needs Accessibility access.
 public final class EventTap {
-    public typealias Handler = (CGEventType, CGEvent) -> Void
+    /// Returns the event to deliver, or nil to drop it.
+    public typealias Handler = (CGEventType, CGEvent) -> CGEvent?
 
     private let mask: CGEventMask
     private let handler: Handler
@@ -55,18 +56,17 @@ public final class EventTap {
         source = nil
     }
 
-    fileprivate func receive(_ type: CGEventType, _ event: CGEvent) {
-        if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
-            if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
-        } else {
-            handler(type, event)
-        }
+    fileprivate func receive(_ type: CGEventType, _ event: CGEvent) -> CGEvent? {
+        guard type == .tapDisabledByTimeout || type == .tapDisabledByUserInput else { return handler(type, event) }
+        if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
+        return event
     }
 }
 
 private func dispatchEvent(
     proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, userInfo: UnsafeMutableRawPointer?
 ) -> Unmanaged<CGEvent>? {
-    if let userInfo { Unmanaged<EventTap>.fromOpaque(userInfo).takeUnretainedValue().receive(type, event) }
-    return Unmanaged.passUnretained(event)
+    guard let userInfo else { return Unmanaged.passUnretained(event) }
+    let delivered = Unmanaged<EventTap>.fromOpaque(userInfo).takeUnretainedValue().receive(type, event)
+    return delivered.map { Unmanaged.passUnretained($0) }
 }

@@ -3,7 +3,10 @@ import CoreGraphics
 /// Flips notched mouse wheels while leaving trackpads and Magic Mouse on natural scrolling.
 public enum ScrollReverser {
     public static func makeTap() -> EventTap {
-        EventTap(events: [.scrollWheel]) { _, event in reverseIfMouseWheel(event) }
+        EventTap(events: [.scrollWheel]) { _, event in
+            reverseIfMouseWheel(event)
+            return event
+        }
     }
 
     public static func reverseIfMouseWheel(_ event: CGEvent) {

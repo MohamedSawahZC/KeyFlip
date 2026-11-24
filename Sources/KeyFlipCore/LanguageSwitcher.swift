@@ -35,6 +35,7 @@ public enum LanguageSwitcher {
         var detector = ChordDetector()
         return EventTap(events: [.flagsChanged, .keyDown]) { type, event in
             if detector.handle(type: type, flags: event.flags) { selectNextInputSource() }
+            return event
         }
     }
 

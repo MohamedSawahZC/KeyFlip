@@ -2,17 +2,19 @@ import KeyFlipCore
 import ServiceManagement
 import SwiftUI
 
-/// Features that run in the background while KeyFlip is open: scroll reversing and Alt+Shift.
+/// Features that run in the background while KeyFlip is open: scroll reversing, Alt+Shift and Alt+Tab.
 @MainActor
 final class ExtrasModel: ObservableObject {
     private static let reverseKey = "reverseMouseWheel"
     private static let altShiftKey = "altShiftSwitchesLanguage"
+    private static let altTabKey = "altTabSwitchesApps"
     nonisolated private static let backgroundKey = "runInBackground"
 
     nonisolated static var runsInBackground: Bool { UserDefaults.standard.bool(forKey: backgroundKey) }
 
     @Published private(set) var reverseWheel = UserDefaults.standard.bool(forKey: reverseKey)
     @Published private(set) var altShiftSwitchesLanguage = UserDefaults.standard.bool(forKey: altShiftKey)
+    @Published private(set) var altTabSwitchesApps = UserDefaults.standard.bool(forKey: altTabKey)
     @Published private(set) var hasPermission = EventTap.hasPermission
     @Published private(set) var runInBackground = runsInBackground
     @Published private(set) var startsAtLogin = SMAppService.mainApp.status == .enabled
@@ -20,8 +22,9 @@ final class ExtrasModel: ObservableObject {
 
     private let scrollTap = ScrollReverser.makeTap()
     private let languageTap = LanguageSwitcher.makeTap()
+    private let appSwitchTap = AppSwitcher.makeTap()
 
-    var needsPermission: Bool { (reverseWheel || altShiftSwitchesLanguage) && !hasPermission }
+    var needsPermission: Bool { (reverseWheel || altShiftSwitchesLanguage || altTabSwitchesApps) && !hasPermission }
 
     init() {
         sync()
@@ -41,6 +44,11 @@ final class ExtrasModel: ObservableObject {
     func setAltShiftSwitchesLanguage(_ on: Bool) {
         altShiftSwitchesLanguage = on
         save(on, forKey: Self.altShiftKey)
+    }
+
+    func setAltTabSwitchesApps(_ on: Bool) {
+        altTabSwitchesApps = on
+        save(on, forKey: Self.altTabKey)
     }
 
     func setRunInBackground(_ on: Bool) {
@@ -70,6 +78,7 @@ final class ExtrasModel: ObservableObject {
     private func sync() {
         toggle(scrollTap, on: reverseWheel && hasPermission)
         toggle(languageTap, on: altShiftSwitchesLanguage && hasPermission)
+        toggle(appSwitchTap, on: altTabSwitchesApps && hasPermission)
     }
 
     private func toggle(_ tap: EventTap, on: Bool) {

@@ -28,17 +28,20 @@ KeyFlip lists external keyboards only. It hides gaming mice that pretend to be k
 
 macOS uses one natural-scrolling setting for both trackpad and mouse, so a mouse wheel feels upside down. Open **Scroll wheel** in the KeyFlip sidebar and turn on **Reverse scroll wheel**. KeyFlip flips notched mouse wheels only, and your trackpad and Magic Mouse keep natural scrolling.
 
-macOS asks for **Accessibility** access the first time. Allow it in **System Settings → Privacy & Security → Accessibility**. KeyFlip has to stay running for this and for the Alt+Shift switch. Turn on **Start at login** and **Run in background**: KeyFlip then lives in the menu bar (⌨ icon) with no Dock icon and no window at login. Use the menu bar icon to open it, flip the toggles, or quit.
+macOS asks for **Accessibility** access the first time. Allow it in **System Settings → Privacy & Security → Accessibility**. KeyFlip has to stay running for this and for the Windows shortcuts. Turn on **Start at login** and **Run in background**: KeyFlip then lives in the menu bar (⌨ icon) with no Dock icon and no window at login. Use the menu bar icon to open it, flip the toggles, or quit.
 
 Release builds have no Apple Developer signature, so macOS sees each new version as a different app. After an update, remove KeyFlip from the Accessibility list and allow it again. Builds you sign yourself (below) keep the permission.
 
-## Switching input language
+## Windows shortcuts
 
-macOS does not let a shortcut use modifier keys alone, so Alt+Shift cannot switch language out of the box. Open **Language switch** in KeyFlip and turn on **Alt + Shift switches language**. Press and release ⌥ Option and ⇧ Shift together to move to the next language. Alt+Shift with another key still works as a normal shortcut.
+With **Ctrl is ⌘**, your Ctrl key runs Mac shortcuts, so the Mac app switcher moves to Ctrl+Tab. Open **Windows shortcuts** in the KeyFlip sidebar to get the Windows keys back:
 
-This uses the same Accessibility access as the scroll wheel fix.
+- **Alt + Tab switches apps**: hold Alt, tap Tab to move through apps, release Alt to switch. Alt+Shift+Tab goes back.
+- **Alt + Shift switches language**: press and release Alt and Shift together to move to the next input language. Alt+Shift with another key still works as a normal shortcut.
 
-The macOS shortcut is ⌃ Control + Space. With **Ctrl is ⌘**, that means pressing Win + Space on a Windows keyboard.
+macOS does not offer either one natively: ⌘ can live on one key only, and macOS shortcuts cannot use modifier keys alone. Both use the same Accessibility access as the scroll wheel fix.
+
+The macOS language shortcut ⌃ Control + Space still works. With **Ctrl is ⌘**, you press it as Win + Space.
 
 ## How it works
 
